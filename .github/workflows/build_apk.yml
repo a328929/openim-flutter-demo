@@ -16,14 +16,14 @@ jobs:
         submodules: recursive
         fetch-depth: 0
 
-    # 关键修改：降级到 Java 11，这是安卓构建最稳定的版本
+    # 必须用 Java 17，否则插件无法编译
+    # 我们换成 'temurin' 发行版，希望能解决之前的兼容性bug
     - name: Set up Java
       uses: actions/setup-java@v3
       with:
-        distribution: 'zulu'
-        java-version: '11'
+        distribution: 'temurin'
+        java-version: '17'
 
-    # 保持这个版本，因为它能解决代码里的版本冲突
     - name: Set up Flutter
       uses: subosito/flutter-action@v2
       with:
@@ -36,10 +36,9 @@ jobs:
     - name: Get Dependencies
       run: flutter pub get
 
-    # 关键参数：--release (改用正式版构建试试，有时比 debug 更稳)
-    # 并加上 --verbose 这样如果还错能看到哪里错了，但这次应该能过
+    # 加上 --verbose 详细日志，万一报错能看到底裤
     - name: Build APK (Release Mode)
-      run: flutter build apk --release --no-tree-shake-icons
+      run: flutter build apk --release --no-tree-shake-icons --verbose
 
     - name: Upload APK
       uses: actions/upload-artifact@v4
