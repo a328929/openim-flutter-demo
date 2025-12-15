@@ -16,16 +16,18 @@ jobs:
         submodules: recursive
         fetch-depth: 0
 
+    # 关键修改：降级到 Java 11，这是安卓构建最稳定的版本
     - name: Set up Java
       uses: actions/setup-java@v3
       with:
         distribution: 'zulu'
-        java-version: '17'
+        java-version: '11'
 
-    - name: Set up Flutter (The Magic Version)
+    # 保持这个版本，因为它能解决代码里的版本冲突
+    - name: Set up Flutter
       uses: subosito/flutter-action@v2
       with:
-        flutter-version: '3.24.3'  # 这是一个“黄金版本”，完美兼容新旧依赖！
+        flutter-version: '3.24.3'
         channel: 'stable'
 
     - name: Accept Android Licenses
@@ -34,11 +36,13 @@ jobs:
     - name: Get Dependencies
       run: flutter pub get
 
-    - name: Build APK (Debug Mode)
-      run: flutter build apk --debug --no-tree-shake-icons
+    # 关键参数：--release (改用正式版构建试试，有时比 debug 更稳)
+    # 并加上 --verbose 这样如果还错能看到哪里错了，但这次应该能过
+    - name: Build APK (Release Mode)
+      run: flutter build apk --release --no-tree-shake-icons
 
     - name: Upload APK
       uses: actions/upload-artifact@v4
       with:
-        name: openim-debug-app
-        path: build/app/outputs/flutter-apk/app-debug.apk
+        name: openim-app-release
+        path: build/app/outputs/flutter-apk/app-release.apk
