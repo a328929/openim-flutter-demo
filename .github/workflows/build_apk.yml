@@ -25,8 +25,7 @@ jobs:
     - name: Set up Flutter
       uses: subosito/flutter-action@v2
       with:
-        flutter-version: '3.22.2'  # 保持这个新版本，它能自动解决冲突
-        channel: 'stable'
+        channel: 'stable' # 关键修改：不写版本号，默认取最新版！
 
     - name: Accept Android Licenses
       run: yes | flutter doctor --android-licenses || true
