@@ -16,14 +16,14 @@ jobs:
         submodules: recursive
         fetch-depth: 0
 
-    # 必须用 Java 17，否则插件无法编译
-    # 我们换成 'temurin' 发行版，希望能解决之前的兼容性bug
+    # 1. 设置 Java 17 (Temurin 版本，最稳)
     - name: Set up Java
       uses: actions/setup-java@v3
       with:
         distribution: 'temurin'
         java-version: '17'
 
+    # 2. 设置 Flutter (黄金版本)
     - name: Set up Flutter
       uses: subosito/flutter-action@v2
       with:
@@ -33,10 +33,21 @@ jobs:
     - name: Accept Android Licenses
       run: yes | flutter doctor --android-licenses || true
 
+    # 3. 【关键步骤】强行替换 IP (移花接木大法)
+    # 我们知道文件在 openim_common/lib/src/config.dart
+    # 这行命令会把 "your-server-ip or your-domain" 替换成 "82.158.224.4"
+    - name: Replace Server IP
+      run: |
+        echo "Updating IP address in config..."
+        sed -i 's/your-server-ip or your-domain/82.158.224.4/g' openim_common/lib/src/config.dart
+        
+        # 打印一下看看有没有改成功（只打印那一行）
+        grep "82.158.224.4" openim_common/lib/src/config.dart || echo "Replace failed!"
+
     - name: Get Dependencies
       run: flutter pub get
 
-    # 加上 --verbose 详细日志，万一报错能看到底裤
+    # 4. 开始构建 (Release 正式版)
     - name: Build APK (Release Mode)
       run: flutter build apk --release --no-tree-shake-icons --verbose
 
