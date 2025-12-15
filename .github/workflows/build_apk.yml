@@ -25,18 +25,11 @@ jobs:
     - name: Set up Flutter
       uses: subosito/flutter-action@v2
       with:
-        flutter-version: '3.22.2'  # 关键修改：升级到 3.22.2 以支持 intl 0.19
+        flutter-version: '3.22.2'  # 保持这个新版本，它能自动解决冲突
         channel: 'stable'
 
     - name: Accept Android Licenses
       run: yes | flutter doctor --android-licenses || true
-
-    - name: Fix Dependencies (Force Override)
-      run: |
-        # 强制创建一个覆盖配置，防止版本打架
-        echo "dependency_overrides:" >> pubspec.yaml
-        echo "  intl: ^0.19.0" >> pubspec.yaml
-        cat pubspec.yaml # 打印出来看看
 
     - name: Get Dependencies
       run: flutter pub get
