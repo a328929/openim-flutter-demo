@@ -22,10 +22,11 @@ jobs:
         distribution: 'zulu'
         java-version: '17'
 
-    - name: Set up Flutter
+    - name: Set up Flutter (The Magic Version)
       uses: subosito/flutter-action@v2
       with:
-        channel: 'stable' # 关键修改：不写版本号，默认取最新版！
+        flutter-version: '3.24.3'  # 这是一个“黄金版本”，完美兼容新旧依赖！
+        channel: 'stable'
 
     - name: Accept Android Licenses
       run: yes | flutter doctor --android-licenses || true
